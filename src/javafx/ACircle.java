@@ -46,27 +46,33 @@ public class ACircle extends Circle{
 		else return -1;
 	}
 	
-	public void collide(Scene scene, ArrayList<ACircle> circles){
+	public boolean colliding(ArrayList<ACircle> circles){
+		for (int i = 0; i < circles.size(); i++){
+			if (this.getCenterX() != circles.get(i).getCenterX() && this.getCenterY() != circles.get(i).getCenterY()){
+				if (this.intersects(circles.get(i).getBoundsInParent())) return true;
+			}
+		}
+		return false;
+	}
+	
+	public void collideWalls(Scene scene){
 		// check collision against walls
 		if (this.getTranslateX()+ this.getCenterX() < this.getRadius() && dx < 0)	dx = -dx;
 		else if (scene.getWidth() - this.getTranslateX()- this.getCenterX()  < this.getRadius() && dx > 0) dx = -dx;
-		if (this.getTranslateY()+ this.getCenterY()  < this.getRadius() && dy < 0)	dy = -dy;
+		if (this.getTranslateY()+ this.getCenterY()  < this.getRadius()+30 && dy < 0)	dy = -dy;
 		else if (scene.getHeight() - 50 - this.getCenterY() - this.getTranslateY()  < this.getRadius() && dy > 0) dy = -dy;
-		
+	
+	}
+	
+	public void collide(ArrayList<ACircle> circles){
 		// check collision against other bugs	
 		for (int i = 0; i < circles.size(); i++){
-			if (this.getTranslateX() != circles.get(i).getTranslateX() && this.getTranslateX() != circles.get(i).getTranslateX()){
+			if (this.getCenterX() != circles.get(i).getCenterX() && this.getCenterY() != circles.get(i).getCenterY()){
+				
 				// (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
 				int a = (int) Math.pow(((this.getCenterX() + this.getTranslateX()) - (circles.get(i).getCenterX() + circles.get(i).getTranslateX())), 2);
 				int b = (int) Math.pow(((this.getCenterY() + this.getTranslateY()) - (circles.get(i).getCenterY() + circles.get(i).getTranslateY())), 2);
 				int c = (int) Math.pow(this.getRadius() + circles.get(i).getRadius(), 2);
-				
-				int collisionPointX = (int) (((this.getTranslateX() * circles.get(i).getRadius()) + (circles.get(i).getTranslateX() * this.getRadius())) 
-						/ (this.getRadius() + circles.get(i).getRadius()));
-						 
-				int collisionPointY = 
-						(int) (((this.getTranslateY() * circles.get(i).getRadius()) + (circles.get(i).getTranslateY() * this.getRadius())) 
-						/ (this.getRadius() + circles.get(i).getRadius()));
 				
 				if (a + b <= c){
 					float newdx = 
@@ -86,6 +92,7 @@ public class ACircle extends Circle{
 					this.dx = newdx;
 					this.dy = newdy;
 				}
+				
 			}
 		}
 	}
